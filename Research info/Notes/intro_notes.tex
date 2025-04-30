@@ -1,0 +1,106 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{color}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Sparrow Search Algorithm in Traffic Control}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{1em}{}
+
+\title{Improving Traffic Congestion Control Using the Sparrow Search Algorithm}
+\author{Jam Wilder \\
+Department of Computer Science \\
+Central Washington University \\
+\texttt{jamarius.wilder@cwu.edu}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+\begin{abstract}
+This report investigates the application of the Sparrow Search Algorithm (SSA), a swarm intelligence metaheuristic inspired by the foraging behavior of sparrows, to address the challenge of traffic congestion. SSA is implemented to optimize various traffic control parameters including traffic signal timing and dynamic vehicle routing. The effectiveness of SSA is compared with other optimization techniques and demonstrated using traffic simulation software.
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+\begin{itemize}[leftmargin=2em]
+    \item Background of urban traffic congestion
+    \item Importance of adaptive traffic control systems
+    \item Motivation for applying nature-inspired algorithms
+    \item Goals and structure of the report
+\end{itemize}
+
+\section{Sparrow Search Algorithm Overview}
+\begin{itemize}[leftmargin=2em]
+    \item Biological inspiration and behavior modeling
+    \item Producer, scrounger, and warner roles
+    \item Mathematical modeling of SSA
+    \item Advantages over traditional algorithms
+\end{itemize}
+
+\section{Problem Formulation}
+\begin{itemize}[leftmargin=2em]
+    \item Definition of the traffic control optimization problem
+    \item Objectives: minimize delay, maximize flow, etc.
+    \item Constraints: legal limits, safety, etc.
+    \item Representation of control variables (e.g., signal timing vectors)
+\end{itemize}
+
+\section{Methodology}
+\begin{itemize}[leftmargin=2em]
+    \item SSA initialization and parameter setting
+    \item Fitness function design (e.g., total waiting time)
+    \item Integration with traffic simulation tools (e.g., SUMO, AIMSUN)
+    \item Real-time adaptability and decision-making
+\end{itemize}
+
+\section{Experimental Setup}
+\begin{itemize}[leftmargin=2em]
+    \item Description of the traffic scenario
+    \item Simulation configuration
+    \item Comparison algorithms (e.g., GA, PSO)
+    \item Evaluation metrics used
+\end{itemize}
+
+\section{Results and Discussion}
+\begin{itemize}[leftmargin=2em]
+    \item Performance of SSA in simulations
+    \item Comparison with benchmark algorithms
+    \item Sensitivity analysis
+    \item Scalability and limitations
+\end{itemize}
+
+\section{Conclusion}
+\begin{itemize}[leftmargin=2em]
+    \item Summary of findings
+    \item Practical implications for smart traffic systems
+    \item Suggestions for future work
+\end{itemize}
+
+\newpage
+\section*{References}
+\begin{itemize}[leftmargin=2em]
+    \item Sun, Y., et al. (2020). Sparrow Search Algorithm: Theory, Literature Review, and Applications. \textit{Nature-Inspired Computation}.
+    \item SUMO – Simulation of Urban MObility. \url{https://www.eclipse.org/sumo/}
+    \item Li, J., et al. (2021). An Improved SSA for Urban Traffic Signal Timing. \textit{IEEE Transactions on Intelligent Transportation Systems}.
+\end{itemize}
+
+\end{document}

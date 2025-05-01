@@ -5,3 +5,5 @@
 - [ ] Tune fitness-function weights to balance average delay, throughput, and bottleneck penalties
 - [] Find/Add dataset
 - [] Implement SSA optimization algorithm
+- [] Make the code more efficient and scalable
+- [] Make first model more of a simulation before trying to use a dataset first

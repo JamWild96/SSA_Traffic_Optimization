@@ -13,7 +13,7 @@
 
 /// CONFIGURABLE PARAMETERS
 enum {
-    PHASE_COUNT = 4,         // e.g. 4 phases per intersection
+    PHASE_COUNT = 4,         //  #4 phases per intersection
     MAX_ROUTES  = 10,        // maximum alternative paths per origin–destination
     MAX_LINES   = 256,       // max CSV line length
 };
@@ -63,12 +63,14 @@ int main(void) {
         update_positions(iter);
         // Optionally print best fitness:
         // printf("Iter %3d: Best fitness = %.6f\n", iter, population[0].fitness);
+
+
     }
 
     // Output best solution
     printf("Best fitness: %.6f\n", population[0].fitness);
     // TODO: decode and print vars as timings, routes, detours
-
+    printf("Best solution: %.005f\n ", population[1].fitness);
     // Clean up
     free(intersections);
     return 0;

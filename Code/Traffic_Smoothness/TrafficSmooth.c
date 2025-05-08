@@ -29,7 +29,7 @@ typedef struct {
 } Intersection;
 
 typedef struct {
-    double vars[DIMENSION];  // [ signal timings | routing indices | detour flags ]
+    double *vars;  // [ signal timings | routing indices | detour flags ]
     double fitness;
 } Sparrow;
 
@@ -38,8 +38,8 @@ static Intersection *intersections = NULL;
 static int num_intersections    = 0;
 
 // Decision-variable bounds
-static double LOWER_BOUND[DIMENSION];
-static double UPPER_BOUND[DIMENSION];
+static double *LOWER_BOUND = NULL;
+static double *UPPER_BOUND = NULL;
 
 static Sparrow population[POP_SIZE];
 

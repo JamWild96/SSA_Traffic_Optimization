@@ -38,3 +38,8 @@ if __name__ == "__main__":
     p.add_argument('--coords', type=str, required=True)
     args = p.parse_args()
     generate_graph(args.nodes, args.density, args.graph, args.coords)
+
+#Save the result of the adjacency matrix to a variable
+
+
+#Mark the node most visited by the sparrows from the adjacency matrix

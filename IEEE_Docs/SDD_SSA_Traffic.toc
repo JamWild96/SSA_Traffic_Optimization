@@ -1,0 +1,81 @@
+\contentsline {section}{\numberline {I}Introduction}{2}{section.1}%
+\contentsline {subsection}{\numberline {\mbox {I-A}}Purpose}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {\mbox {I-B}}Scope}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {\mbox {I-C}}Definitions, Acronyms, and Abbreviations}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {\mbox {I-D}}References}{2}{subsection.1.4}%
+\contentsline {subsection}{\numberline {\mbox {I-E}}Document Overview}{2}{subsection.1.5}%
+\contentsline {section}{\numberline {II}Architectural Design}{3}{section.2}%
+\contentsline {subsection}{\numberline {\mbox {II-A}}System Overview}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {\mbox {II-B}}Component Decomposition}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {\mbox {II-C}}Architectural Patterns}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {\mbox {II-D}}Design Rationale}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {\mbox {II-E}}Component Diagram}{3}{subsection.2.5}%
+\contentsline {section}{\numberline {III}Detailed Component Design}{3}{section.3}%
+\contentsline {subsection}{\numberline {\mbox {III-A}}Graph Module}{3}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-A}1}Responsibilities}{3}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-A}2}Classes and Interfaces}{3}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-A}3}Design Details}{3}{lstlisting.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-A}4}Algorithms}{3}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {\mbox {III-B}}SSA Core Engine}{3}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-B}1}Responsibilities}{3}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-B}2}Classes and Interfaces}{3}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-B}3}Design Details}{4}{lstlisting.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-B}4}Algorithms}{4}{subsubsection.3.2.4}%
+\contentsline {subsection}{\numberline {\mbox {III-C}}Future CUDA Accelerator (Not Part of Initial Implementation)}{4}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {\mbox {III-C}1}Future Responsibilities}{4}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-C}2}Planned Classes and Interfaces}{4}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-C}3}Planned Design Details (Future Implementation)}{4}{lstlisting.3}%
+\contentsline {subsubsection}{\numberline {\mbox {III-C}4}Planned CUDA Memory Management}{4}{subsubsection.3.3.4}%
+\contentsline {subsection}{\numberline {\mbox {III-D}}Visualization Engine}{4}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {\mbox {III-D}1}Responsibilities}{4}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-D}2}Classes and Interfaces}{4}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-D}3}Design Details}{4}{subsubsection.3.4.3}%
+\contentsline {subsection}{\numberline {\mbox {III-E}}Data Manager}{5}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {\mbox {III-E}1}Responsibilities}{5}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-E}2}Classes and Interfaces}{5}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-E}3}Design Details}{5}{lstlisting.5}%
+\contentsline {subsection}{\numberline {\mbox {III-F}}System Controller}{5}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {\mbox {III-F}1}Responsibilities}{5}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {\mbox {III-F}2}Classes and Interfaces}{5}{subsubsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {\mbox {III-F}3}Design Details}{5}{lstlisting.6}%
+\contentsline {section}{\numberline {IV}Data Structures and Algorithms}{6}{section.4}%
+\contentsline {subsection}{\numberline {\mbox {IV-A}}Core Data Structures}{6}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-A}1}Graph Representation}{6}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-A}2}Sparrow Population}{6}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-A}3}Visit Tracking}{6}{subsubsection.4.1.3}%
+\contentsline {subsection}{\numberline {\mbox {IV-B}}Key Algorithms}{6}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-B}1}Sparrow Search Algorithm}{6}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-B}2}Route Generation}{6}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {\mbox {IV-B}3}Fitness Evaluation}{6}{subsubsection.4.2.3}%
+\contentsline {section}{\numberline {V}Future CUDA Implementation (Planned for Future Development)}{6}{section.5}%
+\contentsline {subsection}{\numberline {\mbox {V-A}}Planned Parallelization Strategy}{6}{subsection.5.1}%
+\contentsline {subsection}{\numberline {\mbox {V-B}}Planned Memory Model}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {\mbox {V-C}}Planned Kernel Design}{6}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {\mbox {V-C}1}Future Fitness Evaluation Kernel}{7}{lstlisting.7}%
+\contentsline {subsubsection}{\numberline {\mbox {V-C}2}Future Position Update Kernel}{7}{lstlisting.8}%
+\contentsline {subsection}{\numberline {\mbox {V-D}}Future Kernel Launch Configuration}{7}{subsection.5.4}%
+\contentsline {subsection}{\numberline {\mbox {V-E}}Future Optimization Techniques}{7}{subsection.5.5}%
+\contentsline {section}{\numberline {VI}Interface Design}{7}{section.6}%
+\contentsline {subsection}{\numberline {\mbox {VI-A}}External Interfaces}{7}{subsection.6.1}%
+\contentsline {subsubsection}{\numberline {\mbox {VI-A}1}Command-Line Interface}{7}{subsubsection.6.1.1}%
+\contentsline {subsubsection}{\numberline {\mbox {VI-A}2}File Interfaces}{8}{subsubsection.6.1.2}%
+\contentsline {subsubsection}{\numberline {\mbox {VI-A}3}Visualization Output}{8}{subsubsection.6.1.3}%
+\contentsline {subsection}{\numberline {\mbox {VI-B}}Internal Interfaces}{8}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {\mbox {VI-B}1}Component Interfaces}{8}{subsubsection.6.2.1}%
+\contentsline {section}{\numberline {VII}Performance Optimization}{8}{section.7}%
+\contentsline {subsection}{\numberline {\mbox {VII-A}}Algorithmic Optimizations}{8}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {\mbox {VII-A}1}Search Space Pruning}{8}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {\mbox {VII-A}2}Memory Optimizations}{8}{subsubsection.7.1.2}%
+\contentsline {subsection}{\numberline {\mbox {VII-B}}Future CUDA Optimizations (For Planned Future Enhancement)}{8}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {\mbox {VII-B}1}Future Kernel Optimization}{8}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {\mbox {VII-B}2}Future Memory Transfer Optimization}{8}{subsubsection.7.2.2}%
+\contentsline {subsection}{\numberline {\mbox {VII-C}}Pipeline Optimization}{8}{subsection.7.3}%
+\contentsline {section}{\numberline {VIII}Implementation Considerations}{8}{section.8}%
+\contentsline {subsection}{\numberline {\mbox {VIII-A}}Development Environment}{8}{subsection.8.1}%
+\contentsline {subsection}{\numberline {\mbox {VIII-B}}Build Configuration}{9}{subsection.8.2}%
+\contentsline {subsection}{\numberline {\mbox {VIII-C}}Testing Strategy}{9}{subsection.8.3}%
+\contentsline {subsection}{\numberline {\mbox {VIII-D}}Deployment Considerations}{9}{subsection.8.4}%
+\contentsline {section}{\numberline {IX}Appendices}{9}{section.9}%
+\contentsline {subsection}{\numberline {\mbox {IX-A}}Appendix A: Development Schedule}{9}{subsection.9.1}%
+\contentsline {subsection}{\numberline {\mbox {IX-B}}Appendix B: Further Optimization Opportunities}{9}{subsection.9.2}%
+\contentsline {subsection}{\numberline {\mbox {IX-C}}Appendix C: Algorithm Parameters}{9}{subsection.9.3}%

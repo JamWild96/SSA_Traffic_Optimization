@@ -1,0 +1,981 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+% Removed algorithm packages as they're no longer needed
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{listings}
+% Removed TikZ as it's no longer needed
+
+\renewcommand{\labelitemi}{$\bullet$}
+\renewcommand{\labelitemii}{$\circ$}
+\renewcommand{\labelitemiii}{$\diamond$}
+
+% Fix for tabularx width in appendices
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+% Define settings for code listings
+\lstset{
+  language=C,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  commentstyle=\color{green!50!black},
+  breaklines=true,
+  frame=single,
+  captionpos=b,
+  showstringspaces=false
+}
+
+% Title Page
+\title{Software Design Document\\
+       for\\
+       Sparrow Search Algorithm-Based Traffic Congestion Control System\\
+       Version 1.0\\
+       (With Future CUDA Enhancement Plans)}
+\author{Jam Wilder \\
+Department of Computer Science \\
+Central Washington University \\
+\texttt{jamarius.wilder@cwu.edu}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This Software Design Document (SDD) outlines the architectural and detailed design for implementing a Sparrow Search Algorithm (SSA) system for traffic congestion optimization, including plans for future CUDA acceleration. The document describes the system architecture, component design, data structures, interfaces, and algorithms that translate the requirements from the Software Requirements Specification (SRS) into a comprehensive design blueprint. The implementation will be CPU-based, with this design also detailing future plans for parallel computation using NVIDIA CUDA technology to enable faster optimization of traffic routes in large urban networks. All CUDA-related features described in this document are planned for future implementation and are not part of the initial system.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+\subsection{Purpose}
+This Software Design Document (SDD) describes the design and implementation details of the SSA Traffic Optimizer system. It serves as a blueprint for the development team, detailing the system architecture, component design, algorithms, and data structures to be used in implementation.
+
+\subsection{Scope}
+This document covers:
+\begin{itemize}
+    \item System architecture and component organization
+    \item Detailed design of each major component
+    \item Data structures and algorithms
+    \item CUDA parallelization approach
+    \item Interface specifications between components
+    \item Performance optimization strategies
+\end{itemize}
+
+\subsection{Definitions, Acronyms, and Abbreviations}
+\begin{itemize}
+    \item \textbf{SSA} - Sparrow Search Algorithm
+    \item \textbf{CUDA} - Compute Unified Device Architecture
+    \item \textbf{GPU} - Graphics Processing Unit
+    \item \textbf{API} - Application Programming Interface
+    \item \textbf{SRS} - Software Requirements Specification
+    \item \textbf{SDD} - Software Design Document
+    \item \textbf{UML} - Unified Modeling Language
+    \item \textbf{CSV} - Comma-Separated Values
+    \item \textbf{PNG} - Portable Network Graphics
+    \item \textbf{MVC} - Model-View-Controller
+\end{itemize}
+
+\subsection{References}
+\begin{enumerate}
+    \item Software Requirements Specification for SSA Traffic Optimizer, Version 1.0
+    \item IEEE Std 1016-2009, IEEE Standard for Information Technology--Systems Design--Software Design Descriptions
+    \item NVIDIA CUDA C Programming Guide, Version 11.0
+    \item Gamma, E., Helm, R., Johnson, R., \& Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
+    \item Xue, J., \& Shen, B. (2020). "A novel swarm intelligence optimization approach: Sparrow search algorithm." Systems Science \& Control Engineering, 8(1), 22-34.
+\end{enumerate}
+
+\subsection{Document Overview}
+The remainder of this document is structured as follows: Section 2 provides a high-level architectural design. Section 3 details the designs of individual components. Section 4 covers data structure and algorithm specifications. Section 5 discusses the CUDA implementation. Section 6 presents interface designs, and Section 7 describes performance optimization strategies.
+
+\section{Architectural Design}
+
+\subsection{System Overview}
+The SSA Traffic Optimizer follows a hybrid architecture combining:
+\begin{itemize}
+    \item Modular component-based design for core functionality
+    \item Pipeline processing for data flow
+    \item Sequential processing with future plans for parallel computation
+\end{itemize}
+
+\subsection{Component Decomposition}
+The system consists of the following major components:
+
+\begin{enumerate}
+    \item \textbf{Graph Module}: Responsible for generating, loading, and managing traffic network graphs
+    \item \textbf{SSA Core Engine}: Implements the Sparrow Search Algorithm for route optimization
+    \item \textbf{Visualization Engine}: Generates visual representations of networks and results
+    \item \textbf{Data Manager}: Handles file I/O, data validation, and format conversion
+    \item \textbf{System Controller}: Coordinates overall execution and component interaction
+    \item \textbf{CUDA Accelerator}: (Planned for future implementation only) Will provide parallel execution capabilities for computationally intensive tasks
+\end{enumerate}
+
+\subsection{Architectural Patterns}
+
+The architecture employs several design patterns:
+
+\begin{itemize}
+    \item \textbf{Facade Pattern}: System Controller provides a simplified interface to the complex subsystem
+    \item \textbf{Strategy Pattern}: Allows interchangeable optimization algorithms
+    \item \textbf{Observer Pattern}: Components observe state changes in the optimization process
+    \item \textbf{Factory Method}: Creates appropriate instances of graph generators and visualization tools
+    \item \textbf{Pipeline Pattern}: Data flows through successive processing stages
+\end{itemize}
+
+\subsection{Design Rationale}
+The design choices are driven by:
+
+\begin{itemize}
+    \item \textbf{Modularity}: Clean separation of concerns for maintainability
+    \item \textbf{Extensibility}: Ability to add new algorithms or visualization methods
+    \item \textbf{Interoperability}: Standard interfaces for component communication
+    \item \textbf{Resource Efficiency}: Optimized memory management for large graphs
+    \item \textbf{Future Performance}: Design that allows for potential future CUDA acceleration of computationally intensive operations (planned for future implementation)
+\end{itemize}
+
+\subsection{Component Diagram}
+
+The high-level component interaction is illustrated below:
+
+\begin{figure}[h]
+\centering
+% Simplified component diagram without TikZ
+\begin{tabular}{|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{System Architecture} \\
+\hline
+Graph Module & SSA Core Engine & CUDA Accelerator \\
+\hline
+\multicolumn{3}{|c|}{System Controller} \\
+\hline
+Data Manager & & Visualization Engine \\
+\hline
+\end{tabular}
+\caption{Component Diagram of SSA Traffic Optimizer}
+\end{figure}
+
+\section{Detailed Component Design}
+
+\subsection{Graph Module}
+
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Generate random traffic network graphs
+    \item Load graph data from files
+    \item Maintain the graph data structure
+    \item Compute graph metrics and properties
+    \item Provide access to node and edge data
+\end{itemize}
+
+\subsubsection{Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{Graph}: Core data structure representing the traffic network
+    \item \textbf{GraphGenerator}: Factory for creating different types of graphs
+    \item \textbf{GraphLoader}: Handles loading graphs from external formats
+    \item \textbf{GraphValidator}: Ensures graph integrity and validity
+    \item \textbf{CoordinateGenerator}: Creates spatial coordinates for nodes
+\end{itemize}
+
+\subsubsection{Design Details}
+\begin{lstlisting}[caption=Graph Core Data Structure]
+typedef struct {
+    int  num_nodes;          // Number of nodes in graph
+    double **adj_matrix;     // Adjacency matrix with weights
+    double  *coordinates[2]; // Node coordinates for visualization
+    char   **node_labels;    // Optional node labels
+} Graph;
+\end{lstlisting}
+
+\subsubsection{Algorithms}
+\begin{itemize}
+    \item Random graph generation with controlled density
+    \item Coordinate generation using spatial distribution models
+    \item Graph validation ensuring connectivity and consistency
+    \item Adjacency matrix optimization for memory efficiency
+\end{itemize}
+
+\subsection{SSA Core Engine}
+
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Implement the Sparrow Search Algorithm
+    \item Manage population of candidate solutions
+    \item Execute search iterations
+    \item Track optimization metrics
+    \item Provide best solution and statistics
+\end{itemize}
+
+\subsubsection{Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{SSASolver}: Main class implementing the algorithm
+    \item \textbf{Sparrow}: Represents a single candidate solution
+    \item \textbf{Population}: Manages groups of sparrows
+    \item \textbf{FitnessEvaluator}: Calculates route quality
+    \item \textbf{RouteTracker}: Tracks visit frequency and patterns
+\end{itemize}
+
+\subsubsection{Design Details}
+\begin{lstlisting}[caption=Sparrow Representation]
+typedef struct {
+    int   *route;    // Sequence of node indices
+    int    len;      // Route length
+    double fitness;  // Solution quality (lower is better)
+    int    role;     // Producer, scrounger, or scout
+} Sparrow;
+\end{lstlisting}
+
+\subsubsection{Algorithms}
+\begin{itemize}
+    \item Producer behavior implementing exploration strategies
+    \item Scrounger behavior implementing exploitation strategies
+    \item Scout behavior implementing danger awareness and diversity
+    \item Fitness evaluation optimized for route quality
+    \item Population sorting and selection mechanisms
+\end{itemize}
+
+\subsection{Future CUDA Accelerator (Not Part of Initial Implementation)}
+
+\subsubsection{Future Responsibilities}
+\begin{itemize}
+    \item (Future) Parallelize fitness evaluation across population
+    \item (Future) Implement parallel position updates
+    \item (Future) Manage GPU memory allocations
+    \item (Future) Optimize host-device transfers
+    \item (Future) Provide fallback mechanisms for CPU execution
+\end{itemize}
+
+\subsubsection{Planned Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{CudaManager}: Will handle device initialization and management
+    \item \textbf{CudaKernels}: Will contain device functions for parallel execution
+    \item \textbf{MemoryManager}: Will optimize memory transfers and allocations
+    \item \textbf{KernelLauncher}: Will configure and launch CUDA kernels
+    \item \textbf{DeviceQuery}: Will detect and report GPU capabilities
+\end{itemize}
+
+\subsubsection{Planned Design Details (Future Implementation)}
+\begin{lstlisting}[caption=Example Future CUDA Kernel for Fitness Evaluation]
+// PLANNED FOR FUTURE IMPLEMENTATION ONLY
+__global__ void evaluateFitness(int *routes, double *weights,
+                               double *fitness, int popSize,
+                               int routeLen) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < popSize) {
+        double sum = 0.0;
+        int *route = &routes[idx * routeLen];
+
+        for (int i = 1; i < routeLen; i++) {
+            int u = route[i-1];
+            int v = route[i];
+            sum += weights[u * routeLen + v];
+        }
+
+        fitness[idx] = sum;
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Planned CUDA Memory Management}
+\begin{itemize}
+    \item (Future) Graph data stored in constant or texture memory for fast access
+    \item (Future) Population data stored in global memory with coalesced access patterns
+    \item (Future) Shared memory used for frequently accessed fitness calculations
+    \item (Future) Pinned host memory for efficient asynchronous transfers
+    \item (Future) Kernel execution configured for optimal occupancy
+\end{itemize}
+
+\subsection{Visualization Engine}
+
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Generate network visualizations
+    \item Create histograms of node visit frequencies
+    \item Produce heatmaps of visit matrices
+    \item Render traffic jam and building overlays
+    \item Format and annotate output images
+\end{itemize}
+
+\subsubsection{Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{Visualizer}: Base class for visualization components
+    \item \textbf{NetworkVisualizer}: Renders the graph and routes
+    \item \textbf{HistogramGenerator}: Creates distribution charts
+    \item \textbf{HeatmapGenerator}: Produces matrix visualizations
+    \item \textbf{MapAnnotator}: Adds buildings, labels, and traffic jams
+\end{itemize}
+
+\subsubsection{Design Details}
+The visualization is implemented in Python using matplotlib and networkx:
+
+\begin{lstlisting}[language=Python, caption=Network Visualization Function]
+def draw_map(G, coords, route, places=None, jammed_edges=None,
+            output_file="map.png", show_plot=False):
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    # Draw buildings/places as rectangles
+    if places:
+        for p in places:
+            rect = Rectangle((p['x1'], p['y1']),
+                            p['x2'] - p['x1'],
+                            p['y2'] - p['y1'],
+                            linewidth=1.5, edgecolor='brown',
+                            facecolor='tan', alpha=0.35)
+            ax.add_patch(rect)
+
+
+    # Draw all edges as light grey
+    nx.draw_networkx_edges(G, coords, ax=ax,
+                          edge_color='lightgrey',
+                          width=1, alpha=0.6)
+
+    # Draw jammed edges as red
+    if jammed_edges:
+        nx.draw_networkx_edges(G, coords, edgelist=jammed_edges,
+                              ax=ax, edge_color='red',
+                              width=3, alpha=0.8)
+
+    # Highlight optimal route in green
+    route_edges = list(zip(route, route[1:]))
+    nx.draw_networkx_edges(G, coords, edgelist=route_edges,
+                          ax=ax, edge_color='green',
+                          width=4, alpha=0.95)
+
+    # Add legend and save
+    plt.axis('off')
+    plt.savefig(output_file, dpi=300)
+
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+\end{lstlisting}
+
+\subsection{Data Manager}
+
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Handle file I/O operations
+    \item Parse and validate input formats
+    \item Generate output files in appropriate formats
+    \item Manage temporary data during processing
+    \item Implement cleanup procedures
+\end{itemize}
+
+\subsubsection{Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{FileManager}: Handles file operations and error checking
+    \item \textbf{CSVParser}: Parses and validates CSV formatted data
+    \item \textbf{DataValidator}: Ensures data integrity
+    \item \textbf{OutputFormatter}: Formats data for different output formats
+    \item \textbf{CleanupManager}: Manages temporary files and cleanup
+\end{itemize}
+
+\subsubsection{Design Details}
+\begin{lstlisting}[caption=Graph CSV Loading Function]
+Graph* load_graph(const char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (!f) {
+        perror("fopen");
+        return NULL;
+    }
+
+    int n;
+    if (fscanf(f, "%d", &n) != 1) {
+        fclose(f);
+        return NULL;
+    }
+
+
+    Graph *g = malloc(sizeof(*g));
+    g->num_nodes = n;
+    g->adj_matrix = malloc(n * sizeof(double*));
+
+    for (int i = 0; i < n; i++) {
+        g->adj_matrix[i] = malloc(n * sizeof(double));
+        for (int j = 0; j < n; j++) {
+            if (j == n - 1) {
+                // Last column - no comma
+                if (fscanf(f, "%lf", &g->adj_matrix[i][j]) != 1)
+                    g->adj_matrix[i][j] = 0.0;
+            } else {
+                // Has comma
+                if (fscanf(f, "%lf,", &g->adj_matrix[i][j]) != 1)
+                    g->adj_matrix[i][j] = 0.0;
+            }
+        }
+    }
+    fclose(f);
+    return g;
+
+\end{lstlisting}
+
+\subsection{System Controller}
+
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Coordinate overall system execution
+    \item Parse command-line arguments
+    \item Manage execution flow and component interaction
+    \item Handle error conditions
+    \item Report progress and results
+\end{itemize}
+
+\subsubsection{Classes and Interfaces}
+\begin{itemize}
+    \item \textbf{SystemController}: Main coordinator class
+    \item \textbf{ArgumentParser}: Processes command-line options
+    \item \textbf{ExecutionManager}: Controls execution flow
+    \item \textbf{ErrorHandler}: Manages error conditions and recovery
+    \item \textbf{ProgressReporter}: Provides status updates
+\end{itemize}
+
+\subsubsection{Design Details}
+\begin{lstlisting}[caption=Main System Controller Function]
+int main(int argc, char **argv) {
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <graph.csv> <output_route.txt> [nodes] [density]\n", argv[0]);
+        fprintf(stderr, "  nodes: number of nodes in the graph (default: 30)\n");
+        fprintf(stderr, "  density: connection density 0.0-1.0 (default: 0.2)\n");
+        return 1;
+    }
+
+    const char *graph_file = argv[1];
+    const char *route_file = argv[2];
+
+    // Parse optional parameters
+    int n_nodes = (argc > 3) ? atoi(argv[3]) : 30;
+    double density = (argc > 4) ? atof(argv[4]) : 0.2;
+
+    // Validate parameters
+    if (n_nodes <= 0) {
+        fprintf(stderr, "Error: Number of nodes must be positive\n");
+        return 1;
+    }
+
+    if (density <= 0 || density > 1.0) {
+        fprintf(stderr, "Warning: Density should be between 0.0 and 1.0\n");
+    }
+
+    printf("Generating graph with %d nodes and density %g\n", n_nodes, density);
+
+    // Initialize graph module
+    Graph *g = NULL;
+    double coords[n_nodes][2];
+
+    // Generate or load graph
+    // [Graph generation code]
+
+    // Initialize SSA parameters
+    int pop_size = 50;
+    int max_iter = 200;
+
+    // Allocate memory for results
+    int *best_route = malloc(g->num_nodes * sizeof(int));
+    int  best_len;
+
+    // Run optimization
+    printf("Running SSA optimization with pop_size=%d, max_iter=%d\n",
+           pop_size, max_iter);
+    run_ssa(g, pop_size, max_iter, best_route, &best_len);
+
+    // Save results
+    // [Result saving code]
+
+    // Cleanup
+    free(best_route);
+    free_graph(g);
+    return 0;
+}
+\end{lstlisting}
+
+\section{Data Structures and Algorithms}
+
+\subsection{Core Data Structures}
+
+\subsubsection{Graph Representation}
+The traffic network is represented as a weighted directed graph using an adjacency matrix for efficient access:
+
+\begin{lstlisting}
+typedef struct {
+    int  num_nodes;
+    double **adj_matrix;  // Weight matrix
+    double  coords[MAX_NODES][2];  // Spatial coordinates
+} Graph;
+\end{lstlisting}
+
+\subsubsection{Sparrow Population}
+The SSA algorithm maintains a population of sparrows, each representing a potential solution:
+
+\begin{lstlisting}
+typedef struct {
+    int   *route;    // Node sequence
+    int    len;      // Route length
+    double fitness;  // Solution quality
+} Sparrow;
+
+typedef struct {
+    Sparrow *members;      // Array of sparrows
+    int      size;         // Population size
+    int      producer_count; // Number of producers
+    int      best_idx;     // Index of best sparrow
+} Population;
+\end{lstlisting}
+
+\subsubsection{Visit Tracking}
+To analyze search patterns, visit frequencies are tracked:
+
+\begin{lstlisting}
+typedef struct {
+    int **matrix;     // Edge visit counts
+    int  *node_visits; // Node visit counts
+    int   n;          // Matrix size
+} VisitTracker;
+\end{lstlisting}
+
+\subsection{Key Algorithms}
+
+\subsubsection{Sparrow Search Algorithm}
+The main optimization algorithm follows this structure:
+
+% Algorithm description in text form instead of using algorithm environment
+\noindent\textbf{Algorithm: Sparrow Search Algorithm for Route Optimization}
+
+\begin{enumerate}
+\item \textbf{Initialize:} Population of random routes
+\item \textbf{Evaluate:} Initial fitness of each sparrow
+\item \textbf{For} iteration $=1$ to max\_iterations:
+    \begin{enumerate}
+    \item Sort population by fitness
+    \item Identify producers (top 20\%)
+    \item \textbf{Producer Phase:} Update positions by random perturbation
+    \item \textbf{Scrounger Phase:} Follow producers with modifications
+    \item \textbf{Scout Phase:} Random jumps for selected individuals
+    \item \textbf{Evaluate:} Update fitness values
+    \item \textbf{Track:} Update visit frequencies
+    \item \textbf{Update:} Global best solution
+    \end{enumerate}
+\item \textbf{Return:} Best route found
+\end{enumerate}
+
+\subsubsection{Route Generation}
+Random routes are generated to initialize the population:
+
+% Algorithm description in text form
+\noindent\textbf{Algorithm: Random Route Generation}
+
+\begin{enumerate}
+\item \textbf{Procedure} RandomRoute($n$):
+    \begin{enumerate}
+    \item Initialize route $[0, 1, ..., n-1]$
+    \item \textbf{For} $i = n-1$ down to $1$:
+        \begin{enumerate}
+        \item $j \gets$ random integer in $[0, i]$
+        \item Swap route[$i$] and route[$j$]
+        \end{enumerate}
+    \item \textbf{Return} route
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Fitness Evaluation}
+Routes are evaluated based on total travel cost:
+
+% Algorithm description in text form
+\noindent\textbf{Algorithm: Route Fitness Evaluation}
+
+\begin{enumerate}
+\item \textbf{Procedure} Evaluate(Graph $g$, Route $r$):
+    \begin{enumerate}
+    \item $sum \gets 0$
+    \item \textbf{For} $i = 1$ to length($r$) - 1:
+        \begin{enumerate}
+        \item $u \gets r[i-1]$
+        \item $v \gets r[i]$
+        \item $sum \gets sum + g.adj\_matrix[u][v]$
+        \end{enumerate}
+    \item \textbf{Return} $sum$
+    \end{enumerate}
+\end{enumerate}
+
+\section{Future CUDA Implementation (Planned for Future Development)}
+
+\subsection{Planned Parallelization Strategy}
+The future SSA implementation will use CUDA to parallelize:
+\begin{itemize}
+    \item \textbf{Fitness Evaluation}: Each thread will evaluate one sparrow
+    \item \textbf{Position Updates}: Parallel updates for population members
+    \item \textbf{Visit Counting}: Parallel increments of visit counters
+\end{itemize}
+
+\subsection{Planned Memory Model}
+The future CUDA implementation will employ a strategic memory model:
+
+\begin{itemize}
+    \item \textbf{Constant Memory}: Graph structure and algorithm parameters
+    \item \textbf{Global Memory}: Population data and routes
+    \item \textbf{Shared Memory}: Temporary fitness calculations
+    \item \textbf{Registers}: Thread-local variables and loop counters
+\end{itemize}
+
+\subsection{Planned Kernel Design}
+Two primary CUDA kernels are planned for future implementation:
+
+\subsubsection{Future Fitness Evaluation Kernel}
+\begin{lstlisting}[caption=Future Parallel Fitness Evaluation]
+// PLANNED FOR FUTURE IMPLEMENTATION ONLY
+__global__ void evaluateFitness(
+    int *d_routes,          // [popSize][routeLen] flattened array
+    double *d_adjMatrix,    // [n][n] flattened adjacency matrix
+    double *d_fitness,      // [popSize] fitness output
+    int popSize,            // Population size
+    int n                   // Number of nodes
+) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < popSize) {
+        // Calculate fitness for one sparrow
+        double sum = 0.0;
+        int *route = &d_routes[idx * n];
+
+        for (int i = 1; i < n; i++) {
+            int from = route[i-1];
+            int to = route[i];
+            sum += d_adjMatrix[from * n + to];
+        }
+
+        d_fitness[idx] = sum;
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Future Position Update Kernel}
+\begin{lstlisting}[caption=Future Parallel Position Update]
+// PLANNED FOR FUTURE IMPLEMENTATION ONLY
+__global__ void updatePositions(
+    int *d_routes,           // Population routes
+    int *d_bestRoute,        // Global best route
+    float *d_random,         // Pre-generated random values
+    int popSize,             // Population size
+    int n,                   // Number of nodes
+    int numProducers         // Number of producers
+) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < popSize) {
+        int *route = &d_routes[idx * n];
+
+        if (idx < numProducers) {
+            // Producer behavior: swap two random positions
+            int pos1 = (int)(d_random[idx * 2] * (n-1));
+            int pos2 = (int)(d_random[idx * 2 + 1] * (n-1));
+
+            int temp = route[pos1];
+            route[pos1] = route[pos2];
+            route[pos2] = temp;
+        } else {
+            // Scrounger behavior: copy parts from best route
+            for (int i = 0; i < n/2; i++) {
+                route[i] = d_bestRoute[i];
+            }
+            // Add some randomness to second half
+            for (int i = n/2; i < n; i++) {
+                int j = (int)(d_random[idx * n + i] * (n-1));
+                int temp = route[i];
+                route[i] = route[j];
+                route[j] = temp;
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Future Kernel Launch Configuration}
+Future kernel execution will be configured for optimal performance:
+
+\begin{lstlisting}[caption=Future Kernel Launch Configuration]
+// PLANNED FOR FUTURE IMPLEMENTATION ONLY
+// Determine optimal block size for device
+int blockSize = 256; // Typical good value
+int numBlocks = (population_size + blockSize - 1) / blockSize;
+
+// Launch fitness evaluation kernel
+evaluateFitness<<<numBlocks, blockSize>>>(
+    d_routes,
+    d_adjMatrix,
+    d_fitness,
+    population_size,
+    num_nodes
+);
+
+// Check for kernel errors
+cudaError_t err = cudaGetLastError();
+if (err != cudaSuccess) {
+    printf("Kernel launch error: %s\n", cudaGetErrorString(err));
+    // Handle error
+}
+
+// Synchronize to ensure completion
+cudaDeviceSynchronize();
+\end{lstlisting}
+
+\subsection{Future Optimization Techniques}
+
+Several CUDA optimization techniques will be applied in future implementations:
+
+\begin{itemize}
+    \item \textbf{Memory Coalescing}: Structured memory access patterns
+    \item \textbf{Shared Memory}: Used for frequently accessed data
+    \item \textbf{Asynchronous Operations}: Overlapping computation and transfers
+    \item \textbf{Stream Processing}: Multiple concurrent execution streams
+    \item \textbf{Pinned Memory}: Reduced latency for host-device transfers
+\end{itemize}
+
+\section{Interface Design}
+
+\subsection{External Interfaces}
+
+\subsubsection{Command-Line Interface}
+The system uses a command-line interface with the following structure:
+
+\begin{lstlisting}[caption=Command Line Interface]
+Usage: ssa_sim <graph.csv> <output_route.txt> [nodes] [density]
+
+  graph.csv        Output file for graph adjacency matrix
+  output_route.txt Output file for best route found
+  nodes            Optional: Number of nodes in graph (default: 30)
+  density          Optional: Connection density 0.0-1.0 (default: 0.2)
+
+Additional options:
+  -h, --help       Display this help message
+  -v, --verbose    Enable verbose output
+  --iterations=N   Set maximum SSA iterations (default: 200)
+  --population=N   Set population size (default: 50)
+  --cuda           Enable CUDA acceleration (default if available)
+  --cpu            Force CPU execution (no CUDA)
+\end{lstlisting}
+
+\subsubsection{File Interfaces}
+The system uses standardized file formats:
+
+\begin{enumerate}
+    \item \textbf{Graph CSV}: Adjacency matrix with node count header
+    \item \textbf{Coordinates CSV}: Node positions for visualization
+    \item \textbf{Route Text}: Sequence of node indices
+    \item \textbf{Visit Matrix}: Space-separated matrix of visit counts
+    \item \textbf{Buildings CSV}: Description of map features
+    \item \textbf{Traffic Jams CSV}: Description of congested edges
+\end{enumerate}
+
+\subsubsection{Visualization Output}
+The system produces several visualization outputs:
+
+\begin{enumerate}
+    \item \textbf{map.png}: Traffic network with optimized route
+    \item \textbf{visit\_histogram.png}: Node visit frequency chart
+    \item \textbf{visit\_heatmap.png}: Edge visit heatmap
+\end{enumerate}
+
+\subsection{Internal Interfaces}
+
+\subsubsection{Component Interfaces}
+Components communicate through well-defined interfaces:
+
+\begin{lstlisting}[caption=SSA Core Interface]
+// Main SSA function interface
+void run_ssa(
+    const Graph *g,         // Input graph
+    int population_size,    // Number of sparrows
+    int max_iter,           // Maximum iterations
+    int *best_route,        // Output: optimal route
+    int *out_len            // Output: route length
+);
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Future CUDA Module Interface]
+// PLANNED FOR FUTURE IMPLEMENTATION ONLY
+// CUDA module interface
+typedef struct {
+    int available;          // Whether CUDA is available
+    int deviceCount;        // Number of CUDA devices
+    int selectedDevice;     // Currently selected device
+    size_t totalMemory;     // Total GPU memory
+    size_t availableMemory; // Available GPU memory
+    int computeCapability;  // Device compute capability
+} CUDAInfo;
+
+// Initialize CUDA environment
+CUDAInfo* cuda_init();
+
+// Execute parallel fitness evaluation
+void cuda_evaluate_fitness(
+    const Graph *g,          // Input graph
+    Sparrow *population,     // Population to evaluate
+    int population_size,     // Population size
+    double *d_fitness        // Device memory for fitness
+);
+
+// Clean up CUDA resources
+void cuda_cleanup();
+\end{lstlisting}
+
+\section{Performance Optimization}
+
+\subsection{Algorithmic Optimizations}
+
+\subsubsection{Search Space Pruning}
+The SSA implementation includes:
+\begin{itemize}
+    \item Early termination when convergence is detected
+    \item Dynamic adjustment of search parameters based on progress
+    \item Caching of partial route evaluations
+    \item Elimination of invalid or duplicate candidates
+\end{itemize}
+
+\subsubsection{Memory Optimizations}
+Memory usage is optimized through:
+\begin{itemize}
+    \item Compact graph representation using adjacency matrix
+    \item In-place updates where possible
+    \item Reuse of allocated memory buffers
+    \item Strategic placement of data in memory hierarchy
+\end{itemize}
+
+\subsection{Future CUDA Optimizations (For Planned Future Enhancement)}
+
+\subsubsection{Future Kernel Optimization}
+Future CUDA kernels will be optimized for:
+\begin{itemize}
+    \item Minimized thread divergence
+    \item Reduced atomic operations
+    \item Efficient thread mapping to problem domain
+    \item Balanced workload distribution
+\end{itemize}
+
+\subsubsection{Future Memory Transfer Optimization}
+Future host-device transfers will be optimized via:
+\begin{itemize}
+    \item Batched transfers to reduce overhead
+    \item Pinned memory for higher bandwidth
+    \item Overlapping computation and transfers
+    \item Minimizing transfer frequency
+\end{itemize}
+
+\subsection{Pipeline Optimization}
+The overall execution pipeline is optimized by:
+\begin{itemize}
+    \item Concurrent execution of compatible operations
+    \item Efficient workflow sequencing
+    \item Minimizing synchronization points
+    \item Proper load balancing between components
+\end{itemize}
+
+\section{Implementation Considerations}
+
+\subsection{Development Environment}
+The implementation requires:
+\begin{itemize}
+    \item C compiler with C17 support (GCC 7.0+)
+    \item Python 3.8+ with NumPy, Matplotlib, NetworkX
+    \item Make or CMake for build management
+    \item Git for version control
+    \item NVIDIA CUDA Toolkit 10.0+ (for future implementation only)
+\end{itemize}
+
+\subsection{Build Configuration}
+The project uses a Makefile with targets for:
+\begin{itemize}
+    \item Building C components
+    \item Running the optimization
+    \item Generating visualizations
+    \item Cleaning temporary files
+    \item Setting up the Python environment
+    \item Building CUDA components (planned for future implementation only)
+\end{itemize}
+
+\subsection{Testing Strategy}
+The implementation will be verified using:
+\begin{itemize}
+    \item Unit tests for individual components
+    \item Integration tests for component interactions
+    \item Performance benchmarks for optimization
+    \item Validation against known optimal routes
+    \item Stress tests with large networks
+\end{itemize}
+
+\subsection{Deployment Considerations}
+Deployment should consider:
+\begin{itemize}
+    \item Hardware requirements (CUDA-capable GPU for future implementation only)
+    \item Environmental dependencies (Python, and CUDA drivers for future implementation)
+    \item Installation packaging and documentation
+    \item Potential cross-platform compatibility issues
+    \item Performance monitoring and tuning options
+\end{itemize}
+
+\section{Appendices}
+
+\subsection{Appendix A: Development Schedule}
+\begin{center}
+\begin{tabular}{|l|p{7.5cm}|l|}
+\hline
+\textbf{Phase} & \textbf{Activities} & \textbf{Timeline} \\
+\hline
+Design & Complete architecture and detailed design & Weeks 1-2 \\
+\hline
+Implementation I & Core C structures and basic SSA algorithm & Weeks 3-4 \\
+\hline
+Implementation II & Python visualization and integration & Weeks 5-6 \\
+\hline
+Testing & Verification and performance optimization & Weeks 7-8 \\
+\hline
+Documentation & Finalize documentation and user guide & Weeks 9-10 \\
+\hline
+Future Extension & CUDA acceleration and parallelization & Future \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Appendix B: Further Optimization Opportunities}
+Future optimizations could include:
+\begin{itemize}
+    \item CUDA implementation of the core algorithm (future enhancement)
+    \item Multi-GPU parallelization for very large networks (future enhancement)
+    \item Adaptive parameter tuning based on network properties
+    \item Hybrid algorithms combining SSA with other approaches
+    \item Pre-computation of frequently used route segments
+    \item Real-time traffic data integration
+\end{itemize}
+
+\subsection{Appendix C: Algorithm Parameters}
+\begin{center}
+\begin{tabular}{|l|p{7.5cm}|l|}
+\hline
+\textbf{Parameter} & \textbf{Description} & \textbf{Recommended Value} \\
+\hline
+Population Size & Number of sparrows (solutions) & 50-100 \\
+\hline
+Producer Percentage & Percentage of producers & 20\% \\
+\hline
+Maximum Iterations & Maximum search iterations & 200-500 \\
+\hline
+Danger Awareness & Probability of random jumps & 10\% \\
+\hline
+Mutation Rate & Rate of position perturbation & 0.1-0.3 \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

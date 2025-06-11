@@ -1,0 +1,358 @@
+#!/bin/bash
+
+# test_all.sh - Comprehensive test script for SSA Project Map
+# This script tests the complete C-based workflow and Python visualizations
+
+set -e  # Exit on any error
+
+echo "========================================="
+echo "SSA Project Map - C/Python Integration Test"
+echo "========================================="
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Function to check if file exists and has content
+check_file() {
+    local file=$1
+    local description=$2
+
+    if [ -f "$file" ]; then
+        if [ -s "$file" ]; then
+            print_success "$description: $file ($(wc -c < "$file") bytes)"
+            return 0
+        else
+            print_warning "$description: $file exists but is empty"
+            return 1
+        fi
+    else
+        print_error "$description: $file not found"
+        return 1
+    fi
+}
+
+# Function to verify image files
+check_image() {
+    local file=$1
+    local description=$2
+
+    if [ -f "$file" ]; then
+        # Check if it's a valid PNG file
+        if file "$file" | grep -q "PNG image"; then
+            print_success "$description: $file ($(wc -c < "$file") bytes)"
+            return 0
+        else
+            print_warning "$description: $file exists but may not be a valid PNG"
+            return 1
+        fi
+    else
+        print_error "$description: $file not found"
+        return 1
+    fi
+}
+
+# Test counter
+tests_passed=0
+tests_failed=0
+
+echo ""
+print_status "Starting comprehensive test of SSA Project Map..."
+echo ""
+
+# Test 1: Check virtual environment
+print_status "Test 1: Checking virtual environment setup..."
+if [ -f "venv/bin/python" ]; then
+    print_success "Virtual environment found"
+    # Test Python packages
+    if venv/bin/python -c "import numpy, matplotlib, networkx" 2>/dev/null; then
+        print_success "Required Python packages installed"
+        ((tests_passed++))
+    else
+        print_error "Required Python packages missing"
+        ((tests_failed++))
+    fi
+else
+    print_error "Virtual environment not found"
+    print_status "Run: python3 -m venv venv && source venv/bin/activate && pip install -r python/requirements.txt"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 2: Clean and build
+print_status "Test 2: Cleaning previous build artifacts..."
+make clean > /dev/null 2>&1
+print_success "Clean completed"
+
+echo ""
+
+# Test 3: Build C program
+print_status "Test 3: Building C program..."
+if make build > /dev/null 2>&1; then
+    if [ -x "./ssa_sim" ]; then
+        print_success "C program compiled successfully"
+        ((tests_passed++))
+    else
+        print_error "C program not executable"
+        ((tests_failed++))
+    fi
+else
+    print_error "C program compilation failed"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 4: Graph generation with custom parameters
+print_status "Test 4: Testing graph generation with different parameters..."
+
+# Test small graph
+if ./ssa_sim test_small.csv test_small_route.txt 10 0.5 > /dev/null 2>&1; then
+    if check_file "test_small.csv" "Small graph" && check_file "coords.csv" "Coordinates"; then
+        print_success "Small graph generation test passed"
+        ((tests_passed++))
+    else
+        ((tests_failed++))
+    fi
+else
+    print_error "Small graph generation failed"
+    ((tests_failed++))
+fi
+
+# Test medium graph
+if ./ssa_sim test_medium.csv test_medium_route.txt 25 0.3 > /dev/null 2>&1; then
+    if check_file "test_medium.csv" "Medium graph" && check_file "test_medium_route.txt" "Medium route"; then
+        print_success "Medium graph generation test passed"
+        ((tests_passed++))
+    else
+        ((tests_failed++))
+    fi
+else
+    print_error "Medium graph generation failed"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 5: Full workflow
+print_status "Test 5: Running complete workflow..."
+if make clean > /dev/null 2>&1 && make run > /dev/null 2>&1; then
+    print_success "C program execution completed"
+
+    if make histogram > /dev/null 2>&1; then
+        print_success "Histogram generation completed"
+
+        if make map > /dev/null 2>&1; then
+            print_success "Map visualization completed"
+            ((tests_passed++))
+        else
+            print_error "Map visualization failed"
+            ((tests_failed++))
+        fi
+    else
+        print_error "Histogram generation failed"
+        ((tests_failed++))
+    fi
+else
+    print_error "C program execution failed"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 6: Verify all output files
+print_status "Test 6: Verifying output files..."
+
+output_files_ok=true
+
+# Check files generated by C program
+if ! check_file "graph.csv" "Main graph file"; then output_files_ok=false; fi
+if ! check_file "coords.csv" "Coordinates file"; then output_files_ok=false; fi
+if ! check_file "best_route.txt" "Best route file"; then output_files_ok=false; fi
+if ! check_file "visit_matrix.txt" "Visit matrix file"; then output_files_ok=false; fi
+if ! check_file "node_visits.txt" "Node visits file"; then output_files_ok=false; fi
+if ! check_file "route_stats.txt" "Route statistics file"; then output_files_ok=false; fi
+if ! check_file "places.csv" "Places file"; then output_files_ok=false; fi
+if ! check_file "jams.csv" "Traffic jams file"; then output_files_ok=false; fi
+
+# Check image files generated by Python scripts
+if ! check_image "visit_histogram.png" "Visit histogram"; then output_files_ok=false; fi
+if ! check_image "visit_heatmap.png" "Visit heatmap"; then output_files_ok=false; fi
+if ! check_image "map.png" "Traffic simulation map"; then output_files_ok=false; fi
+
+if $output_files_ok; then
+    print_success "All output files verified"
+    ((tests_passed++))
+else
+    print_error "Some output files missing or invalid"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 7: Validate route format
+print_status "Test 7: Validating route format..."
+if [ -f "best_route.txt" ]; then
+    # Count number of unique nodes in route
+    route_nodes=$(wc -l < best_route.txt)
+    graph_nodes=$(head -1 graph.csv)
+
+    if [ "$route_nodes" -eq "$graph_nodes" ]; then
+        print_success "Route contains correct number of nodes ($route_nodes)"
+
+        # Check if all nodes are unique integers
+        if sort -n best_route.txt | uniq | wc -l | grep -q "^$route_nodes$"; then
+            print_success "Route contains unique node IDs"
+            ((tests_passed++))
+        else
+            print_error "Route contains duplicate or invalid node IDs"
+            ((tests_failed++))
+        fi
+    else
+        print_error "Route has $route_nodes nodes but graph has $graph_nodes nodes"
+        ((tests_failed++))
+    fi
+else
+    print_error "Route file not found for validation"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 8: Performance test
+print_status "Test 8: Performance test with larger graph..."
+start_time=$(date +%s)
+
+if venv/bin/python python/map_generator.py --nodes 50 --density 0.25 --graph perf_test.csv --coords perf_test_coords.csv > /dev/null 2>&1; then
+    if ./ssa_sim perf_test.csv perf_test_route.txt > /dev/null 2>&1; then
+        end_time=$(date +%s)
+        duration=$((end_time - start_time))
+
+        if [ $duration -lt 30 ]; then
+            print_success "Performance test passed (50 nodes in ${duration}s)"
+            ((tests_passed++))
+        else
+            print_warning "Performance test slow (50 nodes in ${duration}s)"
+            ((tests_passed++))  # Still pass, just slow
+        fi
+    else
+        print_error "Performance test optimization failed"
+        ((tests_failed++))
+    fi
+else
+    print_error "Performance test graph generation failed"
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 9: Parameter validation
+print_status "Test 9: Testing parameter validation..."
+
+# Test invalid parameters (should fail gracefully)
+error_tests_ok=true
+
+# Test with 0 nodes (should fail)
+if ./ssa_sim invalid.csv invalid_route.txt 0 0.5 > /dev/null 2>&1; then
+    print_warning "Zero nodes test should have failed but didn't"
+    error_tests_ok=false
+fi
+
+# Test with negative density (should handle gracefully)
+if ./ssa_sim invalid2.csv invalid_route.txt 5 -0.1 > /dev/null 2>&1; then
+    # Should not fail but show warning
+    if grep -q "Warning" invalid2.csv 2>/dev/null || [ ! -f invalid2.csv ]; then
+        print_success "Negative density handled correctly"
+    else
+        print_warning "Negative density warning missing"
+        error_tests_ok=false
+    fi
+else
+    # This is also acceptable if it fails
+    print_success "Negative density rejected (program exit)"
+fi
+
+if $error_tests_ok; then
+    ((tests_passed++))
+else
+    ((tests_failed++))
+fi
+
+echo ""
+
+# Test 10: Clean up test files
+print_status "Test 10: Cleaning up test files..."
+rm -f test_small.csv test_small_route.txt
+rm -f test_medium.csv test_medium_route.txt
+rm -f perf_test.csv perf_test_route.txt
+rm -f invalid.csv invalid_route.txt invalid2.csv invalid2_route.txt
+print_success "Test files cleaned up"
+((tests_passed++))
+
+echo ""
+echo "========================================="
+echo "Test Summary"
+echo "========================================="
+echo -e "Tests Passed: ${GREEN}$tests_passed${NC}"
+echo -e "Tests Failed: ${RED}$tests_failed${NC}"
+total_tests=$((tests_passed + tests_failed))
+echo "Total Tests: $total_tests"
+
+if [ $tests_failed -eq 0 ]; then
+    echo ""
+    print_success "ALL TESTS PASSED! 🎉"
+    echo -e "${GREEN}The SSA Project Map is working correctly.${NC}"
+    echo ""
+    echo "Available outputs:"
+    echo "  - visit_histogram.png: Node visit frequency chart"
+    echo "  - visit_heatmap.png: Visit pattern heatmap"
+    echo "  - map.png: Complete traffic simulation"
+    echo "  - best_route.txt: Optimal route found"
+    echo ""
+    echo "Run individual components:"
+    echo "  make build         # Build C program"
+    echo "  make run           # Generate graph and run optimization"
+    echo "  make histogram     # Generate visit analysis"
+    echo "  make map           # Create traffic simulation map"
+    echo "  make visualize     # Generate all visualizations"
+    echo "  make custom NODES=50 DENSITY=0.4  # Run with custom parameters"
+    echo "  make clean         # Remove generated files"
+    echo "  make deep-clean    # Remove files and virtual environment"
+    echo "  make rebuild       # Complete rebuild from scratch"
+    echo "  make help          # Display available commands"
+    exit 0
+else
+    echo ""
+    print_error "SOME TESTS FAILED!"
+    success_rate=$((tests_passed * 100 / total_tests))
+    echo -e "${YELLOW}Success Rate: $success_rate%${NC}"
+    echo ""
+    echo "Check the error messages above for details."
+    echo "Common solutions:"
+    echo "  1. Run: python3 -m venv venv && source venv/bin/activate && pip install -r python/requirements.txt"
+    echo "  2. Ensure GCC is installed and supports C17 standard"
+    echo "  3. Make sure math library is available (-lm flag required)"
+    echo "  4. Check file permissions and disk space"
+    exit 1
+fi

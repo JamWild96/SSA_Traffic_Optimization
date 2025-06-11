@@ -2,6 +2,7 @@ import argparse
 import csv
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 def load_coords(filename):
     coords = {}
@@ -58,10 +59,10 @@ def draw_map(G, coords, route, places=None, jammed_edges=None):
     # Draw buildings/places as rectangles
     if places:
         for p in places:
-            rect = plt.Rectangle((p['x1'], p['y1']),
-                                 p['x2'] - p['x1'],
-                                 p['y2'] - p['y1'],
-                                 linewidth=1.5, edgecolor='brown', facecolor='tan', alpha=0.35)
+            rect = Rectangle((p['x1'], p['y1']),
+                             p['x2'] - p['x1'],
+                             p['y2'] - p['y1'],
+                             linewidth=1.5, edgecolor='brown', facecolor='tan', alpha=0.35)
             ax.add_patch(rect)
             # Label the building in the center
             cx = (p['x1'] + p['x2']) / 2

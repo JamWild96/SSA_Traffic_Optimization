@@ -54,9 +54,10 @@ void run_ssa(const Graph *g,
     /* Allocate population */
     Sparrow *pop = calloc(population_size, sizeof(*pop));
     for (int i = 0; i < population_size; i++) {
-        /* TODO: initialize pop[i].route with a valid path */
-        pop[i].len = 0;
-        pop[i].fitness = 1e308;
+        pop[i].route = malloc(n * sizeof(int));
+        pop[i].len = n;
+        random_route(pop[i].route, n);
+        pop[i].fitness = evaluate(g, &pop[i]);
     }
 
     double global_best = 1e308;
@@ -64,47 +65,57 @@ void run_ssa(const Graph *g,
     int   gb_len = 0;
 
     for (int iter = 0; iter < max_iter; iter++) {
+        /* Sort population by fitness for producer selection */
+        for (int i = 0; i < population_size - 1; i++) {
+            for (int j = i + 1; j < population_size; j++) {
+                if (pop[j].fitness < pop[i].fitness) {
+                    Sparrow temp = pop[i];
+                    pop[i] = pop[j];
+                    pop[j] = temp;
+                }
+            }
+        }
+
         /* Producer stage: generate / update some sparrows */
         // top 20% (by fitness) explore new solutions
-               int num_producers = population_size / 5;
-               for (int i = 0; i < num_producers; i++) {
-                   // Randomly perturb route (swap two nodes)
-                   int a = randint(0, n - 1);
-                   int b = randint(0, n - 1);
-                   int tmp = pop[i].route[a];
-                   pop[i].route[a] = pop[i].route[b];
-                   pop[i].route[b] = tmp;
-               }
+        int num_producers = population_size / 5;
+        if (num_producers < 1) num_producers = 1;
+        for (int i = 0; i < num_producers; i++) {
+            // Randomly perturb route (swap two nodes)
+            int a = randint(0, n - 1);
+            int b = randint(0, n - 1);
+            int tmp = pop[i].route[a];
+            pop[i].route[a] = pop[i].route[b];
+            pop[i].route[b] = tmp;
+        }
 
         // Scrounger stage: rest copy parts from best producers
-                for (int i = num_producers; i < population_size; i++) {
-                    int best_idx = 0;
-                    double best_fit = pop[0].fitness;
-                    for (int k = 1; k < num_producers; k++) {
-                        if (pop[k].fitness < best_fit) {
-                            best_fit = pop[k].fitness;
-                            best_idx = k;
-                        }
-                    }
-                    // Copy first half from best, rest random shuffle
-                    memcpy(pop[i].route, pop[best_idx].route, (n/2)*sizeof(int));
-                    for (int j = n/2; j < n; j++) {
-                        pop[i].route[j] = randint(0, n - 1);
-                    }
-                }
+        for (int i = num_producers; i < population_size; i++) {
+            // Copy from best producer (index 0 after sorting)
+            memcpy(pop[i].route, pop[0].route, n * sizeof(int));
+            // Mutate by shuffling a portion
+            for (int j = n/2; j < n; j++) {
+                int k = randint(0, n - 1);
+                int tmp = pop[i].route[j];
+                pop[i].route[j] = pop[i].route[k];
+                pop[i].route[k] = tmp;
+            }
+        }
 
         /* Danger-awareness stage: random jumps to avoid local optima */
         // Danger-awareness: 10% of population make random jumps
-              int danger_count = population_size / 10;
-              for (int i = 0; i < danger_count; i++) {
-                  int idx = randint(0, population_size - 1);
-                  random_route(pop[idx].route, n);
-              }
+        int danger_count = population_size / 10;
+        if (danger_count < 1) danger_count = 1;
+        for (int i = 0; i < danger_count; i++) {
+            int idx = randint(0, population_size - 1);
+            random_route(pop[idx].route, n);
+            pop[idx].len = n;
+        }
 
         // Evaluate and track global best, update visit matrix
         for (int i = 0; i < population_size; i++) {
             pop[i].fitness = evaluate(g, &pop[i]);
-            for (int j = 1; j < n; j++)
+            for (int j = 1; j < pop[i].len; j++)
                 visit_matrix[pop[i].route[j-1]][pop[i].route[j]]++;
             if (pop[i].fitness < global_best) {
                 global_best = pop[i].fitness;
@@ -128,14 +139,35 @@ void run_ssa(const Graph *g,
      }
      fclose(vf);
 
-     // Output best route for later PNG visualization
-     FILE *bf = fopen("best_route.txt", "w");
-     fprintf(bf, "Best route length: %lf\n", global_best);
-     for (int i = 0; i < gb_len; i++) {
-         fprintf(bf, "%d ", gb_route[i]);
+     // Calculate node visit frequencies (for histogram)
+     int *node_visits = calloc(n, sizeof(int));
+     for (int i = 0; i < n; i++) {
+         for (int j = 0; j < n; j++) {
+             // Count both outgoing and incoming visits
+             if (i != j) {
+                 node_visits[i] += visit_matrix[i][j]; // outgoing
+                 node_visits[j] += visit_matrix[i][j]; // incoming
+             }
+         }
      }
-     fprintf(bf, "\nROUTE_PNG: best_route.png\n");
-     fclose(bf);
+
+     // Output node visit frequencies for histogram
+     FILE *nf = fopen("node_visits.txt", "w");
+     for (int i = 0; i < n; i++) {
+         fprintf(nf, "%d %d\n", i, node_visits[i]);
+     }
+     fclose(nf);
+     free(node_visits);
+
+     // Output route statistics
+     FILE *sf = fopen("route_stats.txt", "w");
+     fprintf(sf, "nodes: %d\n", n);
+     fprintf(sf, "route_length: %lf\n", global_best);
+     fprintf(sf, "iterations: %d\n", max_iter);
+     fprintf(sf, "population: %d\n", population_size);
+     fclose(sf);
+
+     // We don't write best_route.txt here as that's done in main.c
 
      // Cleanup
      free(gb_route);

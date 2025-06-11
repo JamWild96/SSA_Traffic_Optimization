@@ -1,0 +1,465 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tabularx}
+
+\renewcommand{\labelitemi}{$\bullet$}
+\renewcommand{\labelitemii}{$\circ$}
+\renewcommand{\labelitemiii}{$\diamond$}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+% Title Page
+\title{Software Requirements Specification\\
+       for\\
+       Sparrow Search Algorithm-Based Traffic Congestion Control System\\
+       Version 1.0}
+\author{Jam Wilder \\
+Department of Computer Science \\
+Central Washington University \\
+\texttt{jamarius.wilder@cwu.edu}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This Software Requirements Specification (SRS) document follows the guidelines of IEEE Std 830-1998 to describe the requirements for a Sparrow Search Algorithm (SSA) system for traffic congestion optimization, with plans for future CUDA acceleration. The system aims to provide efficient route optimization in urban traffic networks by leveraging swarm intelligence, with future potential for parallel computation capabilities. This document addresses the functional and non-functional requirements, system constraints, and interface specifications required for implementation. All CUDA-related requirements are planned for future implementation phases and are not part of the initial system delivery.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+\subsection{Purpose}
+This SRS document outlines the requirements for a Sparrow Search Algorithm (SSA) implementation targeting traffic congestion control, with plans for future CUDA acceleration. The document is intended for use by developers, testers, and stakeholders involved in the implementation and deployment of the traffic optimization system.
+
+\subsection{Scope}
+The software system described in this document, hereafter referred to as the "SSA Traffic Optimizer," provides an implementation of the Sparrow Search Algorithm to find optimal routes through congested traffic networks. The system includes:
+
+\begin{itemize}
+    \item Graph generation and representation of road networks
+    \item SSA-based route optimization engine
+    \item Plans for future CUDA-accelerated parallelization of SSA
+    \item Visualization tools for network analysis and route display
+    \item Performance analysis and statistics generation
+\end{itemize}
+
+The system does not include:
+\begin{itemize}
+    \item Real-time traffic monitoring hardware
+    \item Integration with vehicle navigation systems
+    \item Traffic light control hardware interfaces
+    \item Public transportation scheduling
+\end{itemize}
+
+\subsection{Definitions, Acronyms, and Abbreviations}
+\begin{itemize}
+    \item \textbf{SSA} - Sparrow Search Algorithm, a swarm intelligence metaheuristic
+    \item \textbf{CUDA} - Compute Unified Device Architecture, NVIDIA's parallel computing platform
+    \item \textbf{GPU} - Graphics Processing Unit
+    \item \textbf{Node} - Representation of an intersection or point of interest in the traffic network
+    \item \textbf{Edge} - Connection between two nodes, representing a road segment
+    \item \textbf{Weight} - Value assigned to an edge, representing travel time, distance, or other metrics
+    \item \textbf{Route} - Sequence of nodes representing a path through the network
+    \item \textbf{Density} - Ratio of existing edges to potential edges in the graph
+    \item \textbf{Producer} - Role in SSA representing sparrows that search for food sources (solutions)
+    \item \textbf{Scrounger} - Role in SSA representing sparrows that follow producers
+    \item \textbf{Scout} - Role in SSA representing sparrows that detect danger and maintain diversity
+\end{itemize}
+
+\subsection{References}
+\begin{enumerate}
+    \item IEEE Std 830-1998, IEEE Recommended Practice for Software Requirements Specifications, IEEE, 1998.
+    \item Xue, J., \& Shen, B. (2020). "A novel swarm intelligence optimization approach: Sparrow search algorithm." Systems Science \& Control Engineering, 8(1), 22-34.
+    \item NVIDIA CUDA Programming Guide, Version 11.0, NVIDIA Corporation, 2020.
+    \item Wilder, J., "Sparrow Search Algorithm for Traffic Congestion Control: A CUDA-Enhanced Approach," Central Washington University, 2024.
+\end{enumerate}
+
+\subsection{Overview}
+The remainder of this document is organized as follows: Section 2 provides an overall description of the system, including product perspective, functions, user characteristics, constraints, and assumptions. Section 3 details the specific requirements, both functional and non-functional. Section 4 covers verification approaches, and Section 5 contains appendices and supporting information.
+
+\section{Overall Description}
+
+\subsection{Product Perspective}
+The SSA Traffic Optimizer is a standalone system that can operate independently or integrate with existing traffic management systems. It builds upon existing research in swarm intelligence algorithms and lays the groundwork for future parallel computing extensions to provide an efficient solution for traffic congestion problems.
+
+\subsubsection{System Interfaces}
+The system consists of the following major components:
+\begin{itemize}
+    \item \textbf{Graph Generation Module}: Creates and maintains traffic network graphs
+    \item \textbf{SSA Core Engine}: Implements the Sparrow Search Algorithm
+    \item \textbf{Visualization Module}: Generates graphical representations of results
+    \item \textbf{Data Import/Export Interface}: Allows interchange with other systems
+    \item \textbf{CUDA Parallel Processing Module}: (Planned for future implementation only) Will accelerate computation using GPU
+\end{itemize}
+
+\subsubsection{User Interfaces}
+The system provides:
+\begin{itemize}
+    \item Command-line interface for configuration and execution
+    \item Generated visual outputs (PNG files) for analysis
+    \item CSV-based data exchange format
+\end{itemize}
+
+\subsubsection{Hardware Interfaces}
+The system requires:
+\begin{itemize}
+    \item Sufficient system memory for graph representation
+    \item Standard input/output devices
+    \item CUDA-compatible NVIDIA GPU (for future CUDA implementation)
+\end{itemize}
+
+\subsubsection{Software Interfaces}
+The system interfaces with:
+\begin{itemize}
+    \item Python runtime environment (version 3.8+)
+    \item NumPy, Matplotlib, NetworkX libraries
+    \item Standard C/C++ development environment
+    \item CUDA runtime library (version 10.0+, for future implementation)
+\end{itemize}
+
+\subsubsection{Communication Interfaces}
+The system uses:
+\begin{itemize}
+    \item File-based data exchange
+    \item Standard output for logs and progress information
+\end{itemize}
+
+\subsubsection{Memory Constraints}
+The system must efficiently manage memory, particularly:
+\begin{itemize}
+    \item Host memory for large graph representation
+    \item (Future) GPU global memory for parallel computations
+    \item (Future) Optimization of memory transfers between host and device
+\end{itemize}
+
+\subsection{Product Functions}
+The system's primary functions include:
+
+\begin{itemize}
+    \item \textbf{Graph Generation}: Create random or predefined traffic network graphs with configurable parameters
+    \item \textbf{Route Optimization}: Implement SSA to find optimal routes through the network
+    \item \textbf{Result Visualization}: Generate visual representations of optimized routes and search patterns
+    \item \textbf{Statistical Analysis}: Calculate and report performance metrics and optimization statistics
+    \item \textbf{Parameter Tuning}: Allow configuration of algorithm parameters for optimization
+    \item \textbf{Parallel Computation}: (Future) Utilize CUDA for acceleration of fitness evaluation and position updates
+\end{itemize}
+
+\subsection{User Characteristics}
+The system is designed for:
+
+\begin{itemize}
+    \item \textbf{Traffic Engineers}: Professionals analyzing traffic patterns and designing network improvements
+    \item \textbf{Researchers}: Individuals studying optimization algorithms and traffic management
+    \item \textbf{Software Developers}: Engineers integrating the system with other traffic solutions
+\end{itemize}
+
+Users are expected to have:
+\begin{itemize}
+    \item Basic understanding of graph theory and optimization concepts
+    \item Familiarity with command-line interfaces
+    \item Knowledge of traffic network characteristics
+\end{itemize}
+
+\subsection{Constraints}
+The system development and operation are subject to the following constraints:
+
+\begin{itemize}
+    \item \textbf{Algorithm Limitations}: SSA may not guarantee global optimality for all inputs
+    \item \textbf{Performance Constraints}: Must handle graphs with at least 100 nodes efficiently
+    \item \textbf{Development Tools}: Must be compatible with GCC and Python toolchains
+    \item \textbf{Interoperability}: Must support standard file formats for data exchange
+    \item \textbf{Future Hardware Dependencies}: Future CUDA implementation will require NVIDIA GPU with CUDA support and NVCC
+\end{itemize}
+
+\subsection{Assumptions and Dependencies}
+The system assumes:
+
+\begin{itemize}
+    \item Traffic network can be represented as a weighted directed graph
+    \item Users have access to CUDA-capable hardware
+    \item Edge weights accurately represent travel costs (time, distance, etc.)
+    \item Graph structure is relatively static during optimization
+\end{itemize}
+
+Dependencies include:
+\begin{itemize}
+    \item Python environment with NumPy, Matplotlib, and NetworkX
+    \item C/C++ compiler with C17 standard support
+    \item Future dependency: CUDA Toolkit (10.0+)
+\end{itemize}
+
+\subsection{Apportionment of Requirements}
+Requirements may be prioritized for implementation across multiple development phases:
+
+\begin{itemize}
+    \item \textbf{Phase 1}: Core SSA implementation and basic visualization
+    \item \textbf{Phase 2}: Advanced visualization and analysis tools
+    \item \textbf{Phase 3}: Integration capabilities and extensions
+    \item \textbf{Phase 4}: CUDA acceleration and performance optimization (Future)
+\end{itemize}
+
+\section{Specific Requirements}
+
+\subsection{External Interfaces}
+
+\subsubsection{User Interfaces}
+\begin{enumerate}
+    \item The system shall provide a command-line interface for configuration and execution
+    \item The system shall generate PNG image files visualizing:
+    \begin{itemize}
+        \item Traffic network with optimized route
+        \item Node visit frequency histograms
+        \item Visit matrix heatmaps
+        \item Buildings and traffic jam representations
+    \end{itemize}
+    \item The system shall accept parameters for:
+    \begin{itemize}
+        \item Graph size and density
+        \item Algorithm iterations and population size
+        \item Output file names and destinations
+    \end{itemize}
+    \item The system shall provide a help command that documents all available options
+\end{enumerate}
+
+\subsubsection{Hardware Interfaces}
+\begin{enumerate}
+    \item The system shall primarily use CPU computation
+    \item The system shall be designed to allow for future GPU acceleration
+    \item (Future) The system shall utilize NVIDIA CUDA-compatible GPUs
+    \item (Future) The system shall detect and utilize available GPU compute capabilities
+    \item (Future) The system shall optimize memory usage based on available GPU resources
+\end{enumerate}
+
+\subsubsection{Software Interfaces}
+\begin{enumerate}
+    \item The system shall interface with Python 3.8+ and required libraries
+    \item The system shall provide a C API for potential integration with other systems
+    \item The system shall support file-based data exchange using standardized formats
+    \item (Future) The system shall interface with the CUDA runtime (version 10.0+)
+\end{enumerate}
+
+\subsection{Functional Requirements}
+
+\subsubsection{Graph Generation}
+\begin{enumerate}
+    \item The system shall generate random traffic networks as weighted directed graphs
+    \item The system shall allow specification of node count and edge density
+    \item The system shall assign meaningful weights to edges based on simulated distance
+    \item The system shall ensure connectivity of the generated graph
+    \item The system shall load existing graphs from CSV-formatted adjacency matrices
+    \item The system shall generate node coordinates for visualization
+    \item The system shall save generated graphs to file in standard formats
+\end{enumerate}
+
+\subsubsection{Sparrow Search Algorithm Implementation}
+\begin{enumerate}
+    \item The system shall implement the SSA with producer, scrounger, and scout behaviors
+    \item The system shall maintain a population of candidate solutions (routes)
+    \item The system shall evaluate solution fitness based on route total weight
+    \item The system shall perform position updates according to SSA rules
+    \item The system shall track the global best solution across iterations
+    \item The system shall implement convergence criteria based on iteration count or quality
+    \item The system shall allow configuration of key algorithm parameters:
+    \begin{itemize}
+        \item Population size
+        \item Producer percentage
+        \item Maximum iterations
+        \item Danger awareness probability
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Future CUDA Acceleration}
+\begin{enumerate}
+    \item (Future) The system shall implement parallel fitness evaluation using CUDA
+    \item (Future) The system shall implement parallel position updates using CUDA
+    \item (Future) The system shall optimize memory transfers between host and device
+    \item (Future) The system shall utilize appropriate memory types (global, shared) for performance
+    \item (Future) The system shall implement efficient thread and block organization
+    \item (Future) The system shall properly synchronize parallel operations
+    \item (Future) The system shall fall back to CPU implementation when CUDA is unavailable
+\end{enumerate}
+
+\subsubsection{Visualization and Analysis}
+\begin{enumerate}
+    \item The system shall generate network visualizations with the optimized route highlighted
+    \item The system shall generate histograms of node visit frequencies
+    \item The system shall generate heatmaps of the visit matrix
+    \item The system shall visualize traffic jams and buildings on the map
+    \item The system shall provide statistical analysis of the optimization process
+    \item The system shall output performance metrics and route quality information
+    \item The system shall allow customization of visualization parameters
+\end{enumerate}
+
+\subsubsection{Data Management}
+\begin{enumerate}
+    \item The system shall save all generated data to files in appropriate formats
+    \item The system shall maintain consistency across related data files
+    \item The system shall implement appropriate error handling for file operations
+    \item The system shall validate input data for correctness and consistency
+    \item The system shall implement cleanup operations for temporary data
+\end{enumerate}
+
+\subsection{Performance Requirements}
+\begin{enumerate}
+    \item The system shall process graphs with up to 100 nodes within 60 seconds on recommended hardware
+    \item The system shall support at least 200 iterations with population size up to 100
+    \item The system shall generate visualizations for large graphs within 30 seconds
+    \item The system shall maintain optimization quality across graph sizes
+    \item (Future) The system shall achieve at least 5x speedup with CUDA compared to CPU-only implementation
+    \item (Future) The system shall use no more than 2GB of GPU memory for graphs up to 100 nodes
+\end{enumerate}
+
+\subsection{Design Constraints}
+\begin{enumerate}
+    \item The system shall be implemented using C/C++ for core algorithms
+    \item The system shall use Python and appropriate libraries for visualization
+    \item The system shall follow a modular architecture for component separation
+    \item The system shall follow file format standards for data interchange
+    \item (Future) The system shall use CUDA C/C++ for GPU acceleration
+    \item (Future) The system shall comply with standard development practices for parallelized code
+\end{enumerate}
+
+\subsection{Software System Attributes}
+
+\subsubsection{Reliability}
+\begin{enumerate}
+    \item The system shall handle invalid inputs gracefully with appropriate error messages
+    \item The system shall verify the consistency of generated solutions
+    \item The system shall implement appropriate memory management to prevent leaks or corruption
+    \item The system shall provide diagnostics for troubleshooting
+    \item The system shall validate all configuration parameters
+\end{enumerate}
+
+\subsubsection{Availability}
+\begin{enumerate}
+    \item The system shall provide alternative methods when preferred approaches fail
+    \item The system shall implement graceful degradation when GPU resources are limited
+    \item The system shall support execution in CPU-only environments with reduced performance
+\end{enumerate}
+
+\subsubsection{Security}
+\begin{enumerate}
+    \item The system shall validate all input files before processing
+    \item The system shall implement appropriate file permission handling
+    \item The system shall prevent buffer overflows and other memory-related vulnerabilities
+\end{enumerate}
+
+\subsubsection{Maintainability}
+\begin{enumerate}
+    \item The system shall follow consistent coding standards
+    \item The system shall include appropriate documentation in the source code
+    \item The system shall implement modular design with clear separation of concerns
+    \item The system shall provide diagnostic features for identifying issues
+    \item The system shall include a comprehensive testing framework
+\end{enumerate}
+
+\subsubsection{Portability}
+\begin{enumerate}
+    \item The system shall run on Windows, Linux, and macOS platforms
+    \item The system shall support multiple CUDA compute capabilities (5.0+)
+    \item The system shall use standard libraries to minimize platform dependencies
+    \item The system shall implement platform-specific code in isolated modules
+    \item The system shall use a portable build system
+\end{enumerate}
+
+\section{Verification}
+
+\subsection{Test Approach}
+The system shall be verified using:
+\begin{itemize}
+    \item Unit tests for individual components
+    \item Integration tests for component interactions
+    \item Performance tests for optimization
+    \item (Future) Performance tests for CUDA acceleration
+    \item Validation tests comparing results to known optimal solutions
+    \item Stress tests with large graphs and extreme parameters
+\end{itemize}
+
+\subsection{Test Requirements}
+\begin{enumerate}
+    \item The system shall correctly generate connected graphs of specified size and density
+    \item The system shall find valid routes through all test graphs
+    \item (Future) The system shall demonstrate performance improvement with CUDA acceleration
+    \item The system shall produce correct visualizations for all test cases
+    \item The system shall handle both small (10 nodes) and large (100+ nodes) graphs
+    \item The system shall validate parameter boundaries and handle invalid inputs
+    \item The system shall maintain numerical stability across iterations
+\end{enumerate}
+
+\section{Supporting Information}
+
+\subsection{Appendices}
+
+\subsubsection{Appendix A: Sparrow Search Algorithm}
+The Sparrow Search Algorithm is a swarm intelligence metaheuristic inspired by the foraging and anti-predator behaviors of sparrows. Key components include:
+
+\begin{itemize}
+    \item \textbf{Producer Behavior}: Leading sparrows that explore the solution space
+    \item \textbf{Scrounger Behavior}: Following sparrows that exploit promising areas
+    \item \textbf{Scout Behavior}: Alert sparrows that monitor for dangers and maintain diversity
+    \item \textbf{Danger Response}: Random jumps to avoid local optima
+\end{itemize}
+
+\subsubsection{Appendix B: File Formats}
+
+\paragraph{Graph Format (CSV)}
+\begin{verbatim}
+n
+w11,w12,...,w1n
+w21,w22,...,w2n
+...
+wn1,wn2,...,wnn
+\end{verbatim}
+
+\paragraph{Coordinates Format (CSV)}
+\begin{verbatim}
+node,x,y
+0,0.123,0.456
+1,0.789,0.012
+...
+\end{verbatim}
+
+\paragraph{Route Format (Text)}
+\begin{verbatim}
+node_id_1
+node_id_2
+...
+node_id_n
+\end{verbatim}
+
+\subsubsection{Appendix C: Future CUDA Implementation Considerations}
+Future CUDA implementation should consider:
+
+\begin{itemize}
+    \item Thread organization for fitness evaluation
+    \item Memory coalescing for efficient access patterns
+    \item Shared memory usage for frequently accessed data
+    \item Synchronization points to maintain algorithm integrity
+    \item Host-device transfer optimization
+\end{itemize}
+
+\subsection{Index}
+\begin{itemize}
+    \item Algorithm parameters - Section 3.2.2
+    \item Future CUDA acceleration - Section 3.2.3
+    \item File formats - Appendix B
+    \item Graph generation - Section 3.2.1
+    \item Performance requirements - Section 3.3
+    \item Sparrow Search Algorithm - Appendix A
+    \item Visualization - Section 3.2.4
+\end{itemize}
+
+\end{document}
